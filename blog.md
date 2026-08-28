@@ -1,13 +1,9 @@
 ---
 layout: post
-title: "정리"
-date: 2026-08-29
+title: "08-27일 정리"
+date: 2026-08-28
+categories: [정리]
 ---
 
----
-layout: post
-title: "2026-08-27"
-date: 2026-08-28
----
 
 
