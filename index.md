@@ -79,3 +79,13 @@ list_title: 지금까지 쓴 글
     fuzzy: false
   });
 </script>
+
+SimpleJekyllSearch({
+    searchInput: document.getElementById('search-input'),
+    resultsContainer: document.getElementById('results-container'),
+    json: '{{ "/search.json" | relative_url }}?v={{ site.time | date: "%s" }}',
+    searchResultTemplate: '<li><a href="{url}">{title}</a> <small>({date})</small></li>',
+    noResultsText: '검색 결과가 없습니다.',
+    limit: 10,
+    fuzzy: false
+});
