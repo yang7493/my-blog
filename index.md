@@ -6,8 +6,8 @@ list_title: 지금까지 쓴 글
 
 📖🏕️개발을 배우면서 그날그날 배운 것 정리
 
-- 배운 것: Git, GitHub, 마크다운
-- 지금 하는 것: 🏕️ 부트캠프 <span id="bootcamp-day"></span>일차
+- ![alt text](image.png) yang7493@g.eulji.ac.kr
+- DATE 🏕️ 부트캠프 <span id="bootcamp-day"></span>일차
 
 <div style="background:#e5e5e5;border-radius:8px;overflow:hidden;height:20px;margin:8px 0;">
   <div id="bootcamp-progress-bar" style="height:100%;background:#4CAF50;width:0%;"></div>
