@@ -1,6 +1,6 @@
 ---
 layout: home
-title: 학습 BLOG
+title: 🫟학습 BLOG
 list_title: 지금까지 쓴 글
 ---
 
