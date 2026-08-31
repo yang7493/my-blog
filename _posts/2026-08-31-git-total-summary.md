@@ -1,14 +1,19 @@
 ---
 layout: post
 title: "Git 명령어와 commit·push·pull·PR 총정리"
-date: 2026-08-31 14:00:00 +0900
+date: 2026-08-31 
 categories: [Git]
 tags: [git, github, commit, push, pull, pull-request]
 mermaid: true
 ---
 
-이번 주에 Git과 GitHub를 처음 배우고, 블로그도 만들어서 인터넷에 올려봤다.
-정신없이 따라 치기만 했던 명령어들을, 이번 기회에 순서대로 정리해본다.
+---
+layout: post
+title: "08-28일 정리"
+date: 2026-08-28
+categories: [정리]
+---
+
 
 ## 전체 흐름부터 한눈에 보기
 
