@@ -6,7 +6,7 @@ list_title: 지금까지 쓴 글
 
 📖🏕️개발을 배우면서 그날그날 배운 것 정리
 
-- ![alt text](image.png) yang7493@g.eulji.ac.kr
+- 📧yang7493@g.eulji.ac.kr
 - DATE 🏕️ 부트캠프 <span id="bootcamp-day"></span>일차
 
 <div style="background:#e5e5e5;border-radius:8px;overflow:hidden;height:20px;margin:8px 0;">
