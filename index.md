@@ -9,13 +9,6 @@ list_title: 지금까지 쓴 글
 - 배운 것: Git, GitHub, 마크다운
 - 지금 하는 것: 🏕️ 부트캠프 <span id="bootcamp-day"></span>일차
 
-<script>
-  const startDate = new Date("2026-08-26");
-  const today = new Date();
-  const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
-  document.getElementById("bootcamp-day").textContent = diffDays;
-</script>
-
 <div style="background:#e5e5e5;border-radius:8px;overflow:hidden;height:20px;margin:8px 0;">
   <div id="bootcamp-progress-bar" style="height:100%;background:#4CAF50;width:0%;"></div>
 </div>
@@ -65,8 +58,8 @@ list_title: 지금까지 쓴 글
   const passedDays = countWorkDays(startDate, cappedToday);
   const percent = Math.min(100, Math.round((passedDays / totalWorkDays) * 100));
 
+  document.getElementById("bootcamp-day").textContent = passedDays;
   document.getElementById("bootcamp-progress-bar").style.width = percent + "%";
   document.getElementById("bootcamp-progress-text").textContent =
     passedDays + " / " + totalWorkDays + "일 진행 (" + percent + "%)";
 </script>
-
