@@ -2,16 +2,9 @@
 layout: post
 title: "Git 명령어와 commit·push·pull·PR 총정리"
 date: 2026-08-31 
-categories: [Git]
+categories: [Git] [정리]
 tags: [git, github, commit, push, pull, pull-request]
 mermaid: true
----
-
----
-layout: post
-title: "08-28일 정리"
-date: 2026-08-28
-categories: [정리]
 ---
 
 
