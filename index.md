@@ -64,7 +64,7 @@ list_title: 지금까지 쓴 글
     passedDays + " / " + totalWorkDays + "일 진행 (" + percent + "%)";
 </script>
 
-<input type="text" id="search-input" placeholder="검색어를 입력하세요" style="width:100%;padding:8px;margin:12px 0;box-sizing:border-box;">
+<input type="text" id="search-input" placeholder="🔍검색어를 입력하세요" style="width:100%;padding:8px;margin:12px 0;box-sizing:border-box;">
 <ul id="results-container"></ul>
 
 <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script>
