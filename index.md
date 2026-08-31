@@ -63,3 +63,19 @@ list_title: 지금까지 쓴 글
   document.getElementById("bootcamp-progress-text").textContent =
     passedDays + " / " + totalWorkDays + "일 진행 (" + percent + "%)";
 </script>
+
+<input type="text" id="search-input" placeholder="검색어를 입력하세요" style="width:100%;padding:8px;margin:12px 0;box-sizing:border-box;">
+<ul id="results-container"></ul>
+
+<script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script>
+<script>
+  SimpleJekyllSearch({
+    searchInput: document.getElementById('search-input'),
+    resultsContainer: document.getElementById('results-container'),
+    json: '{{ "/search.json" | relative_url }}',
+    searchResultTemplate: '<li><a href="{url}">{title}</a> <small>({date})</small></li>',
+    noResultsText: '검색 결과가 없습니다.',
+    limit: 10,
+    fuzzy: false
+  });
+</script>
