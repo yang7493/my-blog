@@ -17,7 +17,7 @@ list_title: 지금까지 쓴 글
 <script>
   const startDate = new Date(2026, 7, 26);   // 2026-08-26
   const endDate   = new Date(2027, 1, 16);   // 2027-02-16
-  const totalWorkDays = 174;
+  const totalWorkDays = 175;
 
   const holidays = [
     "2026-09-24", "2026-09-25",
