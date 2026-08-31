@@ -80,3 +80,92 @@ list_title: 지금까지 쓴 글
   });
 </script>
 
+
+<div id="blog-calendar" style="position:fixed; right:20px; top:120px; width:260px; border:1px solid #ddd; border-radius:8px; padding:12px; background:#fff; font-size:14px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+    <button id="cal-prev" style="border:none;background:none;cursor:pointer;font-size:16px;">‹</button>
+    <strong id="cal-title"></strong>
+    <button id="cal-next" style="border:none;background:none;cursor:pointer;font-size:16px;">›</button>
+  </div>
+  <div id="cal-grid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center;"></div>
+  <div id="cal-posts" style="margin-top:12px; font-size:13px;"></div>
+</div>
+
+<style>
+  @media (max-width: 1200px) {
+    #blog-calendar { position: static !important; width: 100% !important; margin-top: 20px; }
+  }
+  .cal-day { padding:6px 0; border-radius:4px; }
+  .cal-day.has-post { background:#e8f5e9; cursor:pointer; font-weight:bold; }
+  .cal-day.has-post:hover { background:#c8e6c9; }
+  .cal-day.selected { outline:2px solid #4CAF50; }
+</style>
+
+<script>
+(function () {
+  fetch('{{ "/search.json" | relative_url }}?v={{ site.time | date: "%s" }}')
+    .then(res => res.json())
+    .then(posts => {
+      const postsByDate = {};
+      posts.forEach(p => {
+        if (!postsByDate[p.date]) postsByDate[p.date] = [];
+        postsByDate[p.date].push(p);
+      });
+
+      let current = new Date();
+
+      function render() {
+        const year = current.getFullYear();
+        const month = current.getMonth();
+        document.getElementById('cal-title').textContent = year + '년 ' + (month + 1) + '월';
+
+        const grid = document.getElementById('cal-grid');
+        grid.innerHTML = '';
+
+        ['일','월','화','수','목','금','토'].forEach(d => {
+          const el = document.createElement('div');
+          el.textContent = d;
+          el.style.fontWeight = 'bold';
+          grid.appendChild(el);
+        });
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) {
+          grid.appendChild(document.createElement('div'));
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+          const cell = document.createElement('div');
+          cell.textContent = d;
+          cell.className = 'cal-day' + (postsByDate[dateStr] ? ' has-post' : '');
+          if (postsByDate[dateStr]) {
+            cell.addEventListener('click', () => showPosts(dateStr, cell));
+          }
+          grid.appendChild(cell);
+        }
+      }
+
+      function showPosts(dateStr, cellEl) {
+        document.querySelectorAll('.cal-day.selected').forEach(el => el.classList.remove('selected'));
+        cellEl.classList.add('selected');
+
+        const list = postsByDate[dateStr] || [];
+        const container = document.getElementById('cal-posts');
+        container.innerHTML = '<strong>' + dateStr + '</strong><ul style="padding-left:18px;margin:6px 0 0;">' +
+          list.map(p => '<li><a href="' + p.url + '">' + p.title + '</a></li>').join('') +
+          '</ul>';
+      }
+
+      document.getElementById('cal-prev').addEventListener('click', () => { current.setMonth(current.getMonth() - 1); render(); });
+      document.getElementById('cal-next').addEventListener('click', () => { current.setMonth(current.getMonth() + 1); render(); });
+
+      render();
+    });
+})();
+</script>
+
+
+
