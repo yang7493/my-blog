@@ -7,6 +7,12 @@ tags: [git, github, commit, push, pull, pull-request]
 mermaid: true
 ---
 
+---
+layout: post
+title: "08-31일 정리"
+date: 2026-08-31
+categories: [정리]
+---
 
 ## 전체 흐름부터 한눈에 보기
 
