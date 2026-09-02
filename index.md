@@ -81,15 +81,6 @@ list_title: 지금까지 쓴 글
 </script>
 
 
-<div id="blog-calendar" style="position:fixed; right:20px; top:120px; width:260px; border:1px solid #ddd; border-radius:8px; padding:12px; background:#fff; font-size:14px;">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-    <button id="cal-prev" style="border:none;background:none;cursor:pointer;font-size:16px;">‹</button>
-    <strong id="cal-title"></strong>
-    <button id="cal-next" style="border:none;background:none;cursor:pointer;font-size:16px;">›</button>
-  </div>
-  <div id="cal-grid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center;"></div>
-  <div id="cal-posts" style="margin-top:12px; font-size:13px;"></div>
-</div>
 
 <style>
   @media (max-width: 1200px) {
