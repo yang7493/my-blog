@@ -2,6 +2,7 @@
 layout: home
 title: 🫟학습 BLOG
 list_title: 지금까지 쓴 글
+paginate: true
 ---
 
 📖🏕️개발을 배우면서 그날그날 배운 것 정리
@@ -199,10 +200,4 @@ list_title: 지금까지 쓴 글
     });
 })();
 </script>
----
-layout: home
-title: 🫟학습 BLOG
-list_title: 지금까지 쓴 글
-paginate: true
----
 
