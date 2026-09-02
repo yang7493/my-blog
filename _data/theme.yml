@@ -1,3 +1,4 @@
 t:
   home: "🫟학습 BLOG"
-navigation_pages: []
+navigation_pages:
+  - "존재하지않는경로.md"
