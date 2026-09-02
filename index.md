@@ -102,22 +102,46 @@ list_title: 지금까지 쓴 글
 </style>
 
 ## 댓글
+<div id="blog-sidebar" style="position:fixed; right:20px; top:120px; width:260px;">
 
-<script src="https://giscus.app/client.js"
-        data-repo="yang7493/my-blog"
-        data-repo-id="R_kgDOUGl-4w"
-        data-category="Announcements"
-        data-category-id="DIC_kwDOUGl-484DEs1V"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="light"
-        data-lang="ko"
-        crossorigin="anonymous"
-        async>
-</script>
+  <div id="blog-calendar" style="border:1px solid #ddd; border-radius:8px; padding:12px; background:#fff; font-size:14px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <button id="cal-prev" style="border:none;background:none;cursor:pointer;font-size:16px;">‹</button>
+      <strong id="cal-title"></strong>
+      <button id="cal-next" style="border:none;background:none;cursor:pointer;font-size:16px;">›</button>
+    </div>
+    <div id="cal-grid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center;"></div>
+    <div id="cal-posts" style="margin-top:12px; font-size:13px;"></div>
+  </div>
+
+  <div style="margin-top:16px; border:1px solid #ddd; border-radius:8px; padding:6px; background:#fff; overflow:hidden;">
+    <div style="transform:scale(0.85); transform-origin: top left; width:117%;">
+      <script src="https://giscus.app/client.js"
+              data-repo="yang7493/my-blog"
+              data-repo-id="R_kgDOUGl-4w"
+              data-category="Announcements"
+              data-category-id="DIC_kwDOUGl-484DEs1V"
+              data-mapping="pathname"
+              data-strict="0"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="bottom"
+              data-theme="light"
+              data-lang="ko"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  @media (max-width: 1200px) {
+    #blog-sidebar { position: static !important; width: 100% !important; margin-top: 20px; }
+    #blog-sidebar > div:last-child > div { transform: none !important; width:100% !important; }
+  }
+</style>
 
 <script>
 (function () {
