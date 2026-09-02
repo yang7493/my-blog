@@ -1,4 +1,5 @@
 t:
   home: "🫟학습 BLOG"
 navigation_pages:
-  - "존재하지않는경로.md"
+  - "CLAUDE.md"
+  - "월별 조회.md"
