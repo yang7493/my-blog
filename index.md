@@ -92,7 +92,7 @@ list_title: 지금까지 쓴 글
   .cal-day.selected { outline:2px solid #4CAF50; }
 </style>
 
-## 댓글
+
 <div id="blog-sidebar" style="position:fixed; right:20px; top:120px; width:260px;">
 
   <div id="blog-calendar" style="border:1px solid #ddd; border-radius:8px; padding:12px; background:#fff; font-size:14px;">
