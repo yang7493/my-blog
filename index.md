@@ -101,6 +101,24 @@ list_title: 지금까지 쓴 글
   .cal-day.selected { outline:2px solid #4CAF50; }
 </style>
 
+## 댓글
+
+<script src="https://giscus.app/client.js"
+        data-repo="yang7493/my-blog"
+        data-repo-id="R_kgDOUGl-4w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOUGl-484DEs1V"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
 <script>
 (function () {
   fetch('{{ "/search.json" | relative_url }}?v={{ site.time | date: "%s" }}')
