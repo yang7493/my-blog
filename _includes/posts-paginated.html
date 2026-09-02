@@ -1,0 +1,33 @@
+{% for post in paginator.posts %}
+  {% include entry.html %}
+{% endfor %}
+
+<nav aria-label="페이지 이동" style="display:flex; justify-content:center; align-items:center; gap:8px; margin:24px 0; flex-wrap:wrap;">
+
+  {% if paginator.previous_page %}
+    <a href="{{ paginator.previous_page_path | relative_url }}" style="padding:8px 14px; border-radius:6px; background:#f0f0f0; text-decoration:none; color:#333; font-weight:bold;">‹ 이전</a>
+  {% else %}
+    <span style="padding:8px 14px; border-radius:6px; background:#f8f8f8; color:#ccc;">‹ 이전</span>
+  {% endif %}
+
+  {% for i in (1..paginator.total_pages) %}
+    {% if i == 1 %}
+      {% assign page_path = "/" %}
+    {% else %}
+      {% assign page_path = site.paginate_path | replace: ':num', i %}
+    {% endif %}
+
+    {% if i == paginator.page %}
+      <span style="padding:8px 14px; border-radius:6px; background:#9c27b0; color:#fff; font-weight:bold;">{{ i }}</span>
+    {% else %}
+      <a href="{{ page_path | relative_url }}" style="padding:8px 14px; border-radius:6px; background:#f0f0f0; text-decoration:none; color:#333;">{{ i }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if paginator.next_page %}
+    <a href="{{ paginator.next_page_path | relative_url }}" style="padding:8px 14px; border-radius:6px; background:#f0f0f0; text-decoration:none; color:#333; font-weight:bold;">다음 ›</a>
+  {% else %}
+    <span style="padding:8px 14px; border-radius:6px; background:#f8f8f8; color:#ccc;">다음 ›</span>
+  {% endif %}
+
+</nav>
