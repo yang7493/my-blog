@@ -10,7 +10,7 @@ list_title: 지금까지 쓴 글
 - DATE : 🏕️ 부트캠프 <span id="bootcamp-day"></span>일차
 
 <div style="background:#e5e5e5;border-radius:8px;overflow:hidden;height:20px;margin:8px 0;">
-  <div id="bootcamp-progress-bar" style="height:100%;background:#4CAF50;width:0%;"></div>
+  <div id="bootcamp-progress-bar" style="height:100%;background:#9c27b0;width:0%;"></div>
 </div>
 <p id="bootcamp-progress-text"></p>
 
