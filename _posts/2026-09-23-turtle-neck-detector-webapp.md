@@ -5,6 +5,7 @@ date: 2026-09-23 14:00:00 +0900
 categories: [Project]
 tags: [javascript, mediapipe, webcam, web-worker, pwa]
 mermaid: true
+deploy_url: https://turtle-puce.vercel.app/
 ---
 
 **웹캠으로 거북목을 잡아주는 웹앱 만들기 (Turtle)**
