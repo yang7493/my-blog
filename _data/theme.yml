@@ -1,5 +1,6 @@
 t:
   home: "🫟학습 BLOG"
 navigation_pages:
-  - "CLAUDE.md"
+  - "project.md"
   - "월별 조회.md"
+  - "CLAUDE.md"
