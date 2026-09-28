@@ -3,8 +3,7 @@ layout: page
 title: PROJECT
 permalink: /project/
 ---
-
-카테고리 또는 태그에 `project` / `프로젝트` 가 포함된 글 모음입니다.
+ `project`
 
 {% assign project_count = 0 %}
 <ul>
