@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "푸시만 하면 배포되게 만들기 — Vercel 배포 정리"
+title: " Vercel 배포 정리"
 date: 2026-09-21 14:00:00 +0900
 categories: [Deploy]
 tags: [vercel, deploy, github, ci-cd, https]
