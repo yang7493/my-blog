@@ -88,14 +88,20 @@ paginate: true
   @media (max-width: 1200px) {
     #blog-calendar { position: static !important; width: 100% !important; margin-top: 20px; }
   }
-  .cal-day { padding:6px 0; border-radius:4px; }
+  .cal-day { padding:6px 0; border-radius:4px; position:relative; }
   .cal-day.has-post { background:#e8f5e9; cursor:pointer; font-weight:bold; }
   .cal-day.has-post:hover { background:#c8e6c9; }
   .cal-day.selected { outline:2px solid #4CAF50; }
   .cal-day.saturday { color:#1e88e5; }
   .cal-day.sunday { color:#e53935; }
   .cal-day.holiday { color:#e53935; }
-  .cal-day.in-module { border-bottom:3px solid #9c27b0; border-radius:0; }
+  /* 셀 사이 gap(4px)을 넘어 선이 이어지도록 좌우로 2px씩 확장 */
+  .cal-day.in-module::after {
+    content:''; position:absolute; bottom:0; height:3px;
+    left:-2px; right:-2px; background:var(--module-color, #9c27b0);
+  }
+  .cal-day.module-start::after { left:0; border-radius:2px 0 0 2px; }
+  .cal-day.module-end::after { right:0; border-radius:0 2px 2px 0; }
   #cal-modules { margin-top:10px; }
   .cal-module-legend { display:flex; align-items:center; gap:6px; font-size:12px; color:#555; }
   .cal-module-legend .bar { display:inline-block; width:24px; height:3px; background:#9c27b0; }
@@ -229,7 +235,9 @@ paginate: true
           const mod = modules.find(m => dateStr >= m.start && dateStr <= m.end);
           if (mod) {
             cell.classList.add('in-module');
-            cell.style.borderBottomColor = mod.color;
+            cell.style.setProperty('--module-color', mod.color);
+            if (dateStr === mod.start) cell.classList.add('module-start');
+            if (dateStr === mod.end) cell.classList.add('module-end');
             if (!cell.title) cell.title = mod.name;
           }
           if (postsByDate[dateStr]) {
