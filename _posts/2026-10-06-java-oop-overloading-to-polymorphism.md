@@ -6,7 +6,7 @@ categories: [Java]
 tags: [java, oop, static, singleton, polymorphism]
 mermaid: true
 ---
-
+## 들어가며
 
 | 패키지 | 주제 |
 |--------|------|
@@ -336,7 +336,7 @@ Animal animal = new Raccoon();     // O — 다형성 적용
 | Before | 하나의 클래스에 여러 개의 인스턴스가 있는 것 |
 | After | **부모 타입(또는 인터페이스) 하나로 여러 자식 객체를 다룰 수 있고, 같은 메소드를 호출해도 실제 객체에 따라 다르게 동작하는 것** |
 
-말로 설명하려고 정리해 보니, 다형성은 결국 아래 세 문장의 조합이었다.
+
 
 1. **상속(IS-A)** 덕분에 `Animal a = new Raccoon();`이 가능하다.
 2. **오버라이딩** 덕분에 자식마다 같은 메소드를 다르게 구현할 수 있다.
