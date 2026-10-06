@@ -6,7 +6,9 @@ categories: [Java]
 tags: [java, string, array, class, constructor]
 mermaid: true
 ---
+ ## 들어가며 
 
+ 
 | 패키지 | 주제 |
 |--------|------|
 | `a_object.a_string` | String 메소드, 리터럴과 `new String()`, `==`와 `equals()` |
