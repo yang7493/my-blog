@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "같은 코드를 반복하지 않으려면? Java 조건문·반복문·메소드 정리"
+title: "Java 조건문·반복문·메소드 정리"
 date: 2026-09-29 09:00:00 +0900
 categories: [Java]
 tags: [java, if, switch, loop, method]
@@ -15,7 +15,7 @@ Java 수업 chap02 `control-flow-and-method`에서 **프로그램의 흐름을 �
 |--------|------|
 | `a_controlflow` | if / else if / else, Scanner 입력, 단축 평가, switch |
 | `b_loop` | for, while, do-while |
-| `c_method` | 메소드 정의와 호출, 매개변수와 반환값, 접근제어자, 다른 클래스의 메소드 호출 |
+| `c_method` | 메소드가 필요한 이유, 메소드 정의와 호출 흐름 |
 
 ## 문제 상황 (Task)
 
@@ -309,65 +309,13 @@ main() 종료됨...
 - `methodB()`를 만들기만 하고 **아무도 부르지 않으면 실행되지 않는다.** 프로그램은 항상 `main()`에서 시작하고, 호출된 메소드만 실행된다.
 - `methodA()` 안에서는 `methodB()`를 객체 없이 바로 부를 수 있다. 둘 다 같은 객체(`app2`)의 메소드이기 때문이다. 정확히는 `this.methodB()`가 생략된 것이다.
 
-#### 매개변수, 전달인자, 반환값
-
-```java
-int x = app3.testMethod(40, "문자열", true, 'ㅂ');   // 전달인자 (argument)
-
-public int testMethod(int a, String s, boolean b, char c) {   // 매개변수 (parameter)
-    return a;   // 반환값 → x에 40이 들어간다
-}
-```
-
-| 용어 | 위치 | 예시 |
-|------|------|------|
-| 매개변수 (parameter) | 메소드 **선언부**의 변수 | `int a, String s` |
-| 전달인자 (argument) | 메소드 **호출부**에서 넘기는 값 | `40, "문자열"` |
-| 반환타입 | 메소드 이름 앞 | `int`, `void` |
-| 반환값 | `return` 뒤의 값 | `return a;` |
-
-전달인자는 매개변수와 **개수, 순서, 타입이 맞아야** 한다. 반환타입이 `void`가 아니면 `return`을 생략할 수 없다.
-
-#### 접근제어자
-
-| 접근제어자 | 같은 클래스 | 같은 패키지 | 자식 클래스 (다른 패키지) | 전체 |
-|-----------|:----------:|:----------:|:------------------------:|:----:|
-| `public` | O | O | O | O |
-| `protected` | O | O | O | X |
-| (default, 생략) | O | O | X | X |
-| `private` | O | X | X | X |
-
-#### 다른 클래스의 메소드 호출하기
-
-관련된 메소드를 클래스 하나에 모아 두고, 필요한 곳에서 객체를 만들어 쓴다.
-
-```java
-public class Calculator {
-    public int minNumberOf(int a, int b) {
-        return (a > b) ? b : a;   // 삼항 연산자: 조건 ? 참일 때 값 : 거짓일 때 값
-    }
-
-    public int maxNumberOf(int a, int b) {
-        return (a > b) ? a : b;
-    }
-}
-```
-
-```java
-Calculator calc = new Calculator();
-int min = calc.minNumberOf(100, 20);   // 20
-int max = calc.maxNumberOf(100, 20);   // 100
-```
-
-삼항 연산자를 쓰면 if-else 4~5줄이 한 줄로 줄어든다. 이렇게 값 하나를 고르는 짧은 분기에 잘 맞는다.
-
 ## 결과 (Result)
 
 처음 세 가지 질문에 대한 답을 정리하면 다음과 같다.
 
 | 질문 | 도구 | 핵심 |
 |------|------|------|
-| 상황마다 다른 코드를 실행하려면? | if-else, switch, 삼항 연산자 | 범위는 if, 정해진 값은 switch, 짧은 값 선택은 삼항 |
+| 상황마다 다른 코드를 실행하려면? | if-else, switch | 범위는 if, 정해진 값은 switch |
 | 같은 코드를 여러 번 실행하려면? | for, while, do-while | 횟수가 정해지면 for, 조건 중심이면 while, 최소 1회면 do-while |
 | 같은 코드를 여러 곳에서 쓰려면? | 메소드 | 이름을 붙여 묶고, 매개변수로 값을 받고, return으로 돌려준다 |
 
@@ -400,7 +348,5 @@ int max = calc.maxNumberOf(100, 20);   // 100
 - [Oracle Java Tutorials - Equality, Relational, and Conditional Operators](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/op2.html)
 - [JLS 15.23 - Conditional-And Operator &&](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.23)
 - [Oracle Java Tutorials - Defining Methods](https://docs.oracle.com/javase/tutorial/java/javaOO/methods.html)
-- [Oracle Java Tutorials - Passing Information to a Method](https://docs.oracle.com/javase/tutorial/java/javaOO/arguments.html)
-- [Oracle Java Tutorials - Controlling Access to Members of a Class](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html)
 - [Java SE 21 API - Scanner](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Scanner.html)
 - [Java Language Guide - Switch Expressions](https://docs.oracle.com/en/java/javase/21/language/switch-expressions-and-statements.html)
