@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "아무 타입이나 담으면 생기는 문제 — Java 제네릭과 컬렉션(List·Set) 정리"
+title: " Java 제네릭과 컬렉션(List·Set) 정리"
 date: 2026-10-07 09:00:00 +0900
 categories: [Java]
 tags: [java, generic, collection, list, set]
