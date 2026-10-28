@@ -483,6 +483,19 @@ GET /request/regist  ──void──▶  regist.html  (폼 화면 ✅ 원하던
 | `String`을 써야 하는 때 | 주소와 **다른 화면**을 보여 줘야 할 때 (오늘의 POST 결과 화면들) |
 | 헷갈리면? | 그냥 항상 `String`으로 써도 된다. `void`는 **줄여 쓰는 방법**일 뿐이다. |
 
+**👀 오늘의 GET 폼 화면 / POST 결과 화면 한눈에 보기**
+
+```text
+GET  /request/regist  ─void──▶  regist.html      (등록 폼)
+POST /request/regist  ─String─▶ printResult.html (등록 결과)
+
+GET  /request/modify  ─void──▶  modify.html      (수정 폼)
+POST /request/modify  ─String─▶ printResult.html (수정 결과, 메시지 빈칸)
+
+GET  /request/search  ─void──▶  search.html      (검색 폼)
+POST /request/search  ─String─▶ searchResult.html(검색 결과)
+```
+
 ##### (2) `WebRequest`: 하나씩 직접 꺼내기
 
 **역할:** 신규 메뉴 등록. `WebRequest`에서 값을 하나씩 꺼낸다. Servlet의 `HttpServletRequest`와 거의 같은 방식이다.
