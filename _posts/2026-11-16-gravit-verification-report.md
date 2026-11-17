@@ -1,10 +1,11 @@
 ---
 layout: post
-title: "GRAVIT 코드 검증 리포트 정리: 실행으로 확인한 문제와 코드 구조 진단"
+title: "GRAVIT 코드 검증 리포트 정리: 실행으로 확인한 문제와 코드 구조 진단 (팀 프로젝트 결과물)"
 date: 2026-11-16 09:00:00 +0900
 categories: [Project]
 tags: [spring, jpa, concurrency, architecture, code-review]
 mermaid: true
+deploy_url: https://gravit-showcase.vercel.app/
 ---
 
 ## 들어가며 (Situation)

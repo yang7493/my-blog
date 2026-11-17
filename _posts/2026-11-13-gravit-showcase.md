@@ -5,6 +5,7 @@ date: 2026-11-13 09:00:00 +0900
 categories: [Project]
 tags: [spring, jpa, hibernate, performance, react-three-fiber]
 mermaid: true
+deploy_url: https://gravit-showcase.vercel.app/
 ---
 
 ## 들어가며 (Situation)
