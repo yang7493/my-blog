@@ -84,6 +84,8 @@ paginate: true
 
 
 
+{% include category-sidebar.html %}
+
 <style>
   @media (max-width: 1200px) {
     #blog-calendar { position: static !important; width: 100% !important; margin-top: 20px; }
@@ -109,7 +111,7 @@ paginate: true
 </style>
 
 
-<div id="blog-sidebar" style="position:fixed; right:20px; top:120px; width:260px;">
+<div id="blog-sidebar" style="position:fixed; right:20px; top:120px; width:260px; max-height:calc(100vh - 140px); overflow-y:auto;">
 
   <div id="blog-calendar" style="border:1px solid #ddd; border-radius:8px; padding:12px; background:#fff; font-size:14px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -145,20 +147,21 @@ paginate: true
 </div>
 
 <style>
+  /* 양옆 고정 패널이 본문을 가리지 않도록 패널 폭(여백 포함)만큼 본문 좌우를 비운다
+     왼쪽: 20 + 240(#category-sidebar) + 20 / 오른쪽: 20 + 260(#blog-sidebar) + 20 */
+  @media (min-width: 1201px) {
+    .layout--home .canvas { padding-left: 280px; padding-right: 300px; }
+  }
   @media (max-width: 1200px) {
-    #blog-sidebar { position: static !important; width: 100% !important; margin-top: 20px; }
+    #blog-sidebar { position: static !important; width: 100% !important; max-height: none !important; margin-top: 20px; }
     #blog-sidebar > div:last-child > div { transform: none !important; width:100% !important; }
   }
 </style>
 
 <script>
 (function () {
-  // 달력에 선으로 표시할 기간 (모듈)
-  const modules = [
-    { name: "MODULE 1", start: "2026-09-07", end: "2026-09-22", color: "#9c27b0" },
-    { name: "MODULE 2", start: "2026-09-28", end: "2026-11-16", color: "#5e35b1" },
-    { name: "MODULE 3", start: "2026-11-17", end: "2026-12-11", color: "#ba68c8" }
-  ];
+  // 달력에 선으로 표시할 기간 (모듈) — _data/modules.yml
+  const modules = {{ site.data.modules | jsonify }};
 
   // 대한민국 공휴일 (대체공휴일 포함)
   const publicHolidays = {
