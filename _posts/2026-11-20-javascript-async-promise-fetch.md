@@ -120,7 +120,51 @@ takeOrder();
 
 기다리는 동안 직원(메인 스레드)이 할 일은 없다. 그러니 **"끝나면 알려 줘" 하고 맡겨 두고** 그 사이에 다른 일(화면 그리기, 클릭 받기)을 하는 게 맞다. 이것이 비동기가 필요한 이유다.
 
-#### ④ 그럼 누가 대신 기다려 주나? (태스크 큐와 이벤트 루프)
+#### ④ 동기 vs 비동기, 한눈에 비교
+
+지금까지 나온 내용을 정리하면 이렇다. ([MDN - 동기](https://developer.mozilla.org/ko/docs/Glossary/Synchronous), [MDN - 비동기](https://developer.mozilla.org/ko/docs/Glossary/Asynchronous))
+
+- **동기(Synchronous)**: 앞의 작업이 **끝나야** 다음 작업을 시작한다. 코드를 쓴 순서대로 실행되고, 그 순서대로 끝난다.
+- **비동기(Asynchronous)**: 오래 걸리는 작업을 **맡겨 두고**, 끝나기를 기다리지 않고 다음 작업을 한다. 결과는 **나중에** 콜백이나 Promise로 받는다.
+
+| 구분 | 동기 | 비동기 |
+|------|------|--------|
+| 진행 방식 | 앞 작업이 끝날 때까지 기다림 | 맡겨 두고 바로 다음 작업 |
+| 코드 순서와 끝나는 순서 | 같음 | 다를 수 있음 (`setTimeout`이 위에 있어도 나중에 끝남) |
+| 결과 받는 법 | 반환값을 바로 받음 `const x = f()` | 콜백 `f(x => ...)`, `.then(x => ...)`, `const x = await f()` |
+| 에러 처리 | `try-catch` | `.catch()` 또는 `await` + `try-catch` |
+| 기다리는 동안 메인 스레드 | 붙잡힘 → 화면 멈춤 | 비어 있음 → 클릭·화면 처리 가능 |
+| 장점 | 순서가 눈에 보여서 읽기·디버깅이 쉬움 | 기다리는 동안 다른 일을 할 수 있음 |
+| 단점 | 오래 기다리면 전부 멈춤 | 순서 관리가 어려움 (→ 2번의 콜백 지옥) |
+| 오늘 본 예 | `console.log`, `for`/`while`, `sleep` | `setTimeout`, `setInterval`, `fetch`, `res.json()`, `addEventListener` |
+
+같은 "떡볶이 1개 + 다음 손님 주문"을 시간 순으로 놓으면 차이가 더 분명하다.
+
+| 시간 | 동기: `sleep(cook, 3000)` → `takeOrder()` | 비동기: `setTimeout(cook, 3000)` → `takeOrder()` |
+|------|------|------|
+| 0초 | `while`로 3초 대기 시작 | 타이머를 브라우저에 맡기고 주문 7건을 바로 처리 |
+| 0 ~ 3초 | 아무것도 못 함 (클릭·화면 멈춤) | 메인 스레드가 비어 있음 (클릭·화면 정상) |
+| 3초 | `떡볶이 조리 완료` → 그제야 `다음 손님 주문` | `떡볶이 조리 완료` |
+
+헷갈리기 쉬운 점이 두 가지 있다.
+
+1. **비동기는 병렬(여러 개를 동시에 실행)이 아니다.** JavaScript 코드는 여전히 메인 스레드 하나에서 한 번에 하나씩 실행된다. 동시에 진행되는 건 **기다림**(타이머, 네트워크)이고, 그 기다림을 브라우저가 맡는다.
+2. **계산이 오래 걸리는 일은 비동기로 해결되지 않는다.** 1억 번 도는 반복문은 "기다림"이 아니라 직원이 **직접 하는 일**이다. `setTimeout`이나 `async`로 감싸도 결국 메인 스레드에서 돌기 때문에 그동안 화면이 멈춘다. 이런 일은 별도 스레드에서 돌리는 [Web Worker](https://developer.mozilla.org/ko/docs/Web/API/Web_Workers_API)로 보내야 한다.
+
+에러 처리에서도 차이가 난다. 동기 코드처럼 `try-catch`로 감싸도, 그 안에서 **맡겨 둔 콜백**의 에러는 잡히지 않는다.
+
+```javascript
+// 예시 코드
+try {
+    setTimeout(() => { throw new Error('조리 실패'); }, 1000);
+} catch (e) {
+    console.log('잡았다!', e);   // 실행 안 됨
+}
+```
+
+`try` 블록은 `setTimeout`으로 **등록하는 순간** 이미 끝났다. 1초 뒤 콜백이 실행될 때는 `try` 밖이다. 그래서 비동기 에러는 Promise의 `.catch()`나 `await` + `try-catch`로 처리한다. (3·4번에서 다룬다)
+
+#### ⑤ 그럼 누가 대신 기다려 주나? 태스크 큐와 이벤트 루프
 
 직원이 한 명인데 "맡겨 둔다"는 건, 누군가 대신 기다려 준다는 뜻이다. 그건 **브라우저**다. 타이머, 네트워크 요청은 브라우저가 따로 처리하고, 끝나면 할 일(콜백 함수)을 **대기 줄(태스크 큐)** 에 세워 둔다.
 
@@ -130,30 +174,142 @@ takeOrder();
 >
 > **이벤트 루프(event loop)**: 콜 스택에 실행 중인 코드가 있는지, 태스크 큐에 대기 중인 함수가 있는지를 반복 확인한다. 콜 스택이 비어 있고 태스크 큐에 대기 중인 함수가 있으면 FIFO(선입선출)로 콜 스택으로 옮긴다.
 
+##### 등장인물 정리
+
+| 구성 요소 | 관리 주체 | 하는 일 | 분식집 비유 |
+|-----------|-----------|---------|-------------|
+| 콜 스택 (Call Stack) | JS 엔진 | 지금 실행 중인 함수를 쌓아 둔다. 맨 위 함수부터 실행하고, 끝나면 빠진다 | 직원이 **지금 손에 든 일** |
+| Web API | 브라우저 | 타이머, 네트워크, 이벤트 감지처럼 **기다리는 일**을 대신 처리한다 | 타이머, 배달 기사, 초인종 |
+| 태스크 큐 (Task Queue) | 브라우저 | 기다림이 끝난 콜백이 줄 서는 곳 (`setTimeout`, `setInterval`, 클릭 이벤트 등) | 일반 대기 줄 |
+| 마이크로태스크 큐 (Microtask Queue) | 브라우저 | Promise 후속 처리(`.then`, `await` 다음 줄, `queueMicrotask`)가 줄 서는 곳 | **먼저 처리하는** 줄 |
+| 이벤트 루프 (Event Loop) | 브라우저 | 콜 스택이 비었는지 계속 보고, 비면 큐에서 다음 일을 꺼내 준다 | 진동벨 담당 |
+
+수업에서는 태스크 큐 하나로 설명했지만, 실제로는 Promise 전용인 **마이크로태스크 큐**가 따로 있다. ([MDN - 마이크로태스크 가이드](https://developer.mozilla.org/ko/docs/Web/API/HTML_DOM_API/Microtask_guide))
+
 ```mermaid
 flowchart LR
     subgraph JS["JavaScript (직원 1명)"]
         CS["콜 스택<br/>지금 하고 있는 일"]
     end
-    subgraph BR["브라우저 (대신 기다려 줌)"]
+    subgraph BR["브라우저 Web API (대신 기다려 줌)"]
         T["타이머"]
         N["네트워크 (fetch)"]
         E["클릭 등 이벤트"]
     end
-    Q["태스크 큐<br/>끝난 일의 콜백이 줄 서는 곳"]
+    Q["태스크 큐<br/>setTimeout · 이벤트 콜백"]
+    MQ["마이크로태스크 큐<br/>then · await 다음 줄"]
     L(("이벤트 루프"))
 
     CS -->|"setTimeout(cook, 3000)<br/>맡기고 바로 다음 줄"| T
+    CS -->|"fetch(url)"| N
     T -->|"3초 뒤 cook 을 줄 세움"| Q
-    N --> Q
-    E --> Q
-    L -->|"콜 스택이 비면<br/>맨 앞 하나를 꺼내 실행"| CS
+    E -->|"클릭되면 핸들러를 줄 세움"| Q
+    N -->|"응답 도착 → Promise 이행<br/>then 콜백을 줄 세움"| MQ
     Q --> L
+    MQ --> L
+    L -->|"콜 스택이 비면<br/>꺼내서 실행"| CS
 ```
 
-비유하면 이벤트 루프는 **분식집 진동벨 담당**이다. 직원 손이 비었는지 계속 보고 있다가, 손이 비면 "띵! 떡볶이 다 됐어요" 하고 대기 줄 맨 앞의 일을 건네준다.
+##### 이벤트 루프가 한 바퀴 도는 순서
 
-> 중요한 점: `setTimeout(cook, 3000)`은 "**정확히** 3초 뒤 실행"이 아니라 "**최소** 3초 뒤, 직원 손이 비면 실행"이다. 직원이 다른 긴 일을 하고 있으면 더 늦어질 수 있다.
+HTML 표준의 처리 모델을 단순하게 줄이면 이렇다. ([HTML 표준 - Event loops](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops))
+
+1. 태스크 큐에서 태스크를 **하나** 꺼내 실행한다. 페이지가 처음 열릴 때 `<script>`를 실행하는 것도 하나의 태스크다.
+2. 콜 스택이 비면 마이크로태스크 큐를 **빌 때까지 전부** 실행한다. 실행 도중 새로 들어온 마이크로태스크도 이번에 함께 처리한다.
+3. 화면을 다시 그릴 때가 됐으면 렌더링한다. 보통 모니터 주사율에 맞춰 1초에 60번 정도다.
+4. 1번으로 돌아간다.
+
+```mermaid
+flowchart TD
+    A["태스크 큐에서 1개 꺼내 실행<br/>(script 실행, setTimeout 콜백, 클릭 핸들러 ...)"] --> B{"마이크로태스크 큐에<br/>남은 게 있나?"}
+    B -->|"있음"| C["하나 꺼내 실행<br/>(then, await 다음 줄 ...)"]
+    C --> B
+    B -->|"없음"| D{"화면을 다시<br/>그릴 때인가?"}
+    D -->|"예"| E["렌더링"]
+    D -->|"아니오"| A
+    E --> A
+```
+
+이벤트 루프는 **분식집 진동벨 담당**이다. 직원 손이 비었는지 계속 보고 있다가, 손이 비면 대기 줄의 다음 일을 건넨다. 이때 규칙이 하나 있다. 손님 한 명을 응대한 뒤에는 **그 건의 마무리(마이크로태스크)를 전부 끝내고 나서야** 다음 손님(태스크)을 부른다.
+
+> 수업 자료는 "FIFO로 옮긴다"고 했다. 한 줄 안에서는 먼저 들어온 것이 먼저 나가는 게 맞다. 다만 HTML 표준에서 태스크 큐는 하나가 아니라 여러 개일 수 있고(예: 사용자 입력용 줄과 그 밖의 줄), 어느 줄에서 꺼낼지는 브라우저가 정한다. 그래서 브라우저는 클릭 같은 입력을 타이머 콜백보다 먼저 처리할 수도 있다.
+
+##### 수업 코드로 한 단계씩 따라가기
+
+`02_asynchronous.html`의 비동기 코드를 이벤트 루프 관점에서 따라가면 이렇다.
+
+```javascript
+setTimeout(cook , 3000);
+takeOrder();   // 수업 코드는 7번 호출
+```
+
+| 단계 | 콜 스택 | 브라우저 (Web API) | 태스크 큐 | 출력 |
+|------|---------|--------------------|-----------|------|
+| 1 | `setTimeout(cook, 3000)` | 3초 타이머 시작 (`cook` 보관) | 비어 있음 | - |
+| 2 | `takeOrder()` → `console.log` (7번 반복) | 타이머 작동 중 | 비어 있음 | `다음 손님 주문 하세요~` × 7 |
+| 3 | **비어 있음** | 타이머 작동 중 | 비어 있음 | (이때 클릭·화면 그리기 가능) |
+| 4 (3초 뒤) | 비어 있음 | 타이머 끝 | `cook` | - |
+| 5 | `cook()` | - | 비어 있음 | `떡볶이 조리 완료!!(3초)` |
+
+`setTimeout` 자체는 타이머를 맡기기만 하고 **바로 콜 스택에서 빠진다.** 그래서 2단계의 `takeOrder()`가 기다림 없이 실행된다.
+
+##### 콜 스택이 비지 않으면 타이머도 늦어진다
+
+이벤트 루프는 **콜 스택이 비어야** 태스크를 꺼내 준다. 그래서 타이머가 끝나도, 메인 스레드가 다른 일에 묶여 있으면 콜백은 줄에서 계속 기다린다. 수업의 `sleep`으로 확인할 수 있다.
+
+```javascript
+// 예시 코드 (수업의 sleep, cook, takeOrder 재사용)
+setTimeout(cook, 1000);     // 1초 뒤에 줄 서기 예약
+sleep(takeOrder, 3000);     // 메인 스레드를 3초 동안 붙잡음
+```
+
+Node.js에서 실행해 확인한 결과, 두 줄 모두 **3초 시점**에 찍혔다. 타이머는 1초에 끝나서 `cook`이 태스크 큐에 줄을 섰지만, 콜 스택이 `sleep`의 `while`에 묶여 있어서 이벤트 루프가 꺼내 줄 수 없었다.
+
+```text
+다음 손님 주문 하세요~     ← 3초 (sleep 이 끝난 뒤)
+떡볶이 조리 완료!!(3초)    ← 3초 (1초가 아니다)
+```
+
+그래서 `setTimeout(cook, 3000)`은 "**정확히** 3초 뒤 실행"이 아니라 "3초 뒤 **줄을 서고**, 직원 손이 비면 실행"이다. `setTimeout(fn, 0)`도 "즉시"가 아니라 "지금 코드가 다 끝난 뒤 차례가 오면"이다. 또 HTML 표준에 따라 `setTimeout`이 중첩으로 5번 이상 이어지면 브라우저가 최소 4ms를 강제한다. ([MDN - setTimeout](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout))
+
+##### 마이크로태스크는 새치기한다: 출력 순서 맞혀 보기
+
+```javascript
+// 예시 코드
+console.log('1');
+setTimeout(() => console.log('2'), 0);
+Promise.resolve().then(() => console.log('3'));
+queueMicrotask(() => console.log('4'));
+(async () => {
+    console.log('5');
+    await null;
+    console.log('6');
+})();
+console.log('7');
+```
+
+Node.js로 실행한 결과는 `1 → 5 → 7 → 3 → 4 → 6 → 2`다.
+
+| 출력 순서 | 값 | 이유 |
+|-----------|----|------|
+| 1 | `1` | 동기 코드 |
+| 2 | `5` | `async` 함수도 첫 `await` 전까지는 **동기로** 바로 실행된다 |
+| 3 | `7` | 동기 코드. 여기서 콜 스택이 빈다 |
+| 4 | `3` | 마이크로태스크 큐 첫 번째 (`.then`) |
+| 5 | `4` | 마이크로태스크 큐 두 번째 (`queueMicrotask`) |
+| 6 | `6` | 마이크로태스크 큐 세 번째 (`await` 다음 줄) |
+| 7 | `2` | 마이크로태스크 큐가 다 빈 뒤에야 태스크 큐의 `setTimeout` 콜백 |
+
+`setTimeout(…, 0)`은 두 번째 줄에 등록됐지만 **맨 마지막**에 실행된다. `await` 다음 줄은 마이크로태스크로 줄을 서기 때문에 `.then`과 같은 우선순위다.
+
+> 주의: 마이크로태스크는 큐가 빌 때까지 계속 실행된다. `.then` 안에서 또 `.then`을 끝없이 만들면 태스크 큐와 렌더링 차례가 오지 않아 화면이 멈춘다. "비동기니까 안 멈춘다"가 항상 맞는 건 아니다. ([MDN - queueMicrotask()](https://developer.mozilla.org/ko/docs/Web/API/Window/queueMicrotask))
+
+##### 정리: 출력 순서를 예측하는 규칙
+
+1. **동기 코드**가 먼저 끝까지 실행된다. (`async` 함수의 첫 `await` 전까지 포함)
+2. 콜 스택이 비면 **마이크로태스크**(`.then`, `await` 다음 줄, `queueMicrotask`)를 전부 실행한다.
+3. 그다음 **태스크**(`setTimeout`, `setInterval`, 클릭 이벤트) **하나**를 실행하고, 다시 2번으로 간다.
+4. `setTimeout`의 시간은 "그 시간 뒤에 줄을 선다"는 뜻이지 "그 시간에 실행된다"는 뜻이 아니다.
 
 ### 1. 타이머 — `01_timer.html`
 
@@ -440,15 +596,7 @@ async function getReviews() {
 
 #### ④ Promise 콜백은 태스크 큐보다 먼저 실행된다
 
-수업에서는 "태스크 큐" 하나로 설명했다. 실제로는 Promise의 `.then` 콜백이 들어가는 **마이크로태스크 큐**가 따로 있고, `setTimeout`보다 **먼저** 처리된다. 지금 단계에서 꼭 알아야 하는 내용은 아니지만, 출력 순서가 예상과 다를 때 원인이 된다. ([MDN - 마이크로태스크 가이드](https://developer.mozilla.org/ko/docs/Web/API/HTML_DOM_API/Microtask_guide))
-
-```javascript
-// 예시 코드
-setTimeout(() => console.log('timeout'), 0);
-Promise.resolve().then(() => console.log('promise'));
-console.log('sync');
-// 예상 출력: sync → promise → timeout
-```
+수업에서는 "태스크 큐" 하나로 설명했다. 실제로는 Promise의 `.then` 콜백이 들어가는 **마이크로태스크 큐**가 따로 있고, `setTimeout`보다 **먼저** 처리된다. 출력 순서가 예상과 다를 때 원인이 되는 부분이라, 실행 순서 예제와 규칙을 0-⑤에 정리했다.
 
 ### 오늘의 JavaScript 흐름 한눈에 보기
 
@@ -498,13 +646,15 @@ flowchart TD
 
 - 비동기가 필요한 이유는 **JavaScript의 일하는 손(메인 스레드)이 하나**이고, 그 손이 **화면까지** 맡고 있기 때문이다. 기다리는 일을 직접 붙잡고 있으면 화면 전체가 멈춘다.
 - 오래 걸리는 일은 대부분 **서버 응답, 네트워크, 타이머**처럼 "남을 기다리는 일"이다. 이런 일은 브라우저에 맡기고, 끝나면 **태스크 큐 → 이벤트 루프**를 통해 다시 받는다.
+- 비동기는 병렬이 아니다. 기다림만 브라우저가 맡고, JavaScript 코드는 여전히 한 번에 하나씩 실행된다. 그래서 계산이 오래 걸리는 일은 비동기로 감싸도 화면이 멈춘다.
+- 출력 순서는 **동기 코드 → 마이크로태스크 전부 → 태스크 하나 → 마이크로태스크 전부 → …** 규칙으로 예측할 수 있다. `setTimeout`의 시간은 "줄 서는 시점"일 뿐이다.
 - 비동기의 단점은 "**언제 끝날지 모른다**"는 것이다. 순서를 지키려고 콜백을 중첩하면 콜백 지옥이 된다.
 - **Promise**는 결과를 담는 진동벨이고, **async/await**는 그 진동벨을 위에서 아래로 읽히게 기다리는 문법이다. `await`는 메인 스레드가 아니라 **그 함수만** 멈춘다.
 - `fetch`는 Promise를 돌려주고, 본문을 읽는 `res.json()`도 Promise라서 `await`가 두 번 필요하다.
 
 ## 더 학습하면 좋은 개념
 
-- **마이크로태스크 큐와 이벤트 루프 실행 순서** — `Promise.then`이 `setTimeout(…, 0)`보다 먼저 실행되는 이유다. 비동기 코드의 출력 순서를 정확히 예측하려면 필요하다.
+- **Web Worker** — 비동기는 "기다림"만 해결한다. 큰 데이터 정렬, 이미지 처리처럼 **계산** 자체가 오래 걸리는 일은 메인 스레드 밖의 별도 스레드로 보내야 화면이 멈추지 않는다.
 - **`Promise.all` / `Promise.allSettled`** — 오늘은 적립을 **순서대로** 기다렸다. 서로 상관없는 요청 여러 개(메뉴 목록 + 리뷰 목록)는 **동시에** 보내고 한꺼번에 기다리면 훨씬 빠르다.
 - **HTTP 상태 코드와 `res.ok`** — `fetch`는 404·500에서 reject되지 않는다. Spring 컨트롤러가 돌려주는 상태 코드와 프론트의 에러 처리를 연결해서 이해할 수 있다.
 - **CORS** — 프론트(예: `localhost:5173`)에서 Spring 서버(`localhost:8080`)로 `fetch`하면 만나는 에러다. 브라우저가 왜 막는지, 서버에서 무엇을 허용해야 하는지 알아야 한다.
@@ -515,7 +665,11 @@ flowchart TD
 - [MDN - setTimeout()](https://developer.mozilla.org/ko/docs/Web/API/Window/setTimeout)
 - [MDN - setInterval()](https://developer.mozilla.org/ko/docs/Web/API/Window/setInterval)
 - [MDN - Main thread (용어 사전)](https://developer.mozilla.org/en-US/docs/Glossary/Main_thread)
+- [MDN - 동기 (용어 사전)](https://developer.mozilla.org/ko/docs/Glossary/Synchronous)
+- [MDN - 비동기 (용어 사전)](https://developer.mozilla.org/ko/docs/Glossary/Asynchronous)
 - [MDN - 비동기 JavaScript 소개](https://developer.mozilla.org/ko/docs/Learn/JavaScript/Asynchronous/Introducing)
+- [MDN - JavaScript execution model (이벤트 루프)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop)
+- [HTML 표준 - Event loops](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops)
 - [MDN - Promise](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 - [MDN - Promise 사용하기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Guide/Using_promises)
 - [MDN - async function](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Statements/async_function)
@@ -523,4 +677,6 @@ flowchart TD
 - [MDN - Fetch API 사용하기](https://developer.mozilla.org/ko/docs/Web/API/Fetch_API/Using_Fetch)
 - [MDN - Response.json()](https://developer.mozilla.org/ko/docs/Web/API/Response/json)
 - [MDN - 마이크로태스크 가이드](https://developer.mozilla.org/ko/docs/Web/API/HTML_DOM_API/Microtask_guide)
+- [MDN - queueMicrotask()](https://developer.mozilla.org/ko/docs/Web/API/Window/queueMicrotask)
+- [MDN - Web Workers API](https://developer.mozilla.org/ko/docs/Web/API/Web_Workers_API)
 - [JSONPlaceholder](https://jsonplaceholder.typicode.com/)
