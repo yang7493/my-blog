@@ -1,9 +1,5 @@
 <style>
-  #category-sidebar {
-    position:fixed; left:20px; top:120px; width:240px;
-    max-height:calc(100vh - 140px); overflow-y:auto;
-    font-size:14px;
-  }
+  #category-sidebar { font-size:14px; }
   .cs-card { border:1px solid #ddd; border-radius:8px; padding:14px 12px; background:#fff; }
   .cs-card + .cs-card { margin-top:16px; }
   .cs-title {
@@ -78,7 +74,6 @@
   .fr-card-meta { margin-top:auto; padding-top:8px; border-top:1px dashed #eee; font-size:12px; color:#999; }
 
   @media (max-width: 1200px) {
-    #category-sidebar { position:static; width:100%; max-height:none; margin-top:20px; }
     #category-sidebar .cs-list { display:flex; flex-wrap:wrap; gap:4px; }
     #category-sidebar .cs-item { width:auto; gap:8px; border:1px solid #eee; }
   }
@@ -182,11 +177,8 @@
     moduleList.map(m => itemHtml('module', m.name, m.name, moduleCounts[m.name], m.color)).join('');
 
   const results = document.getElementById('filter-results');
-  const entries = document.querySelector('.entries-list');
-  const postSection = entries ? entries.parentElement : null;
-
-  // 필터 결과는 테마의 '지금까지 쓴 글' 목록 바로 위에 표시
-  if (postSection) postSection.parentElement.insertBefore(results, postSection);
+  // 테마의 '지금까지 쓴 글' 목록은 이 스크립트보다 뒤에 그려지므로 DOMContentLoaded 이후에 찾는다
+  let postSection = null;
 
   function applyFilter(type, value) {
     document.querySelectorAll('.cs-item').forEach(el => {
@@ -233,7 +225,15 @@
     applyFilter(f.type, f.value);
     if (results.classList.contains('show')) results.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
-  const initial = readHash();
-  applyFilter(initial.type, initial.value);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const entries = document.querySelector('.entries-list');
+    postSection = entries ? entries.parentElement : null;
+    // 필터 결과는 '지금까지 쓴 글' 목록 바로 위에 표시
+    if (postSection) postSection.parentElement.insertBefore(results, postSection);
+
+    const initial = readHash();
+    applyFilter(initial.type, initial.value);
+  });
 })();
 </script>

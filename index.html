@@ -111,7 +111,7 @@ paginate: true
 </style>
 
 
-<div id="blog-sidebar" style="position:fixed; right:20px; top:120px; width:260px; max-height:calc(100vh - 140px); overflow-y:auto;">
+<div id="blog-sidebar">
 
   <div id="blog-calendar" style="border:1px solid #ddd; border-radius:8px; padding:12px; background:#fff; font-size:14px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -147,16 +147,40 @@ paginate: true
 </div>
 
 <style>
-  /* 양옆 고정 패널이 본문을 가리지 않도록 패널 폭(여백 포함)만큼 본문 좌우를 비운다
-     왼쪽: 20 + 240(#category-sidebar) + 20 / 오른쪽: 20 + 260(#blog-sidebar) + 20 */
-  @media (min-width: 1201px) {
-    .layout--home .canvas { padding-left: 280px; padding-right: 300px; }
-  }
+  /* 왼쪽 사이드바 | 본문 | 오른쪽 달력 3단 배치. 페이지와 함께 스크롤되고 서로 겹치지 않는다.
+     테마의 .wrapper에 transform이 있어 position:fixed가 화면 기준으로 동작하지 않으므로 그리드를 쓴다. */
+  .layout--home main > .index.has-home-grid { max-width: 1640px; }
+  .home-grid { display:grid; grid-template-columns:240px minmax(0, 1fr) 260px; gap:32px; align-items:start; }
+  .home-center > .intro > .inner { max-width:none; padding-left:0; padding-right:0; }
   @media (max-width: 1200px) {
-    #blog-sidebar { position: static !important; width: 100% !important; max-height: none !important; margin-top: 20px; }
+    .home-grid { grid-template-columns:minmax(0, 1fr); }
+    .home-grid > .home-center { order:-1; }
     #blog-sidebar > div:last-child > div { transform: none !important; width:100% !important; }
   }
 </style>
+
+<script>
+  // 테마 레이아웃(intro + main .index)을 3단 그리드로 재배치한다
+  document.addEventListener('DOMContentLoaded', function () {
+    const index = document.querySelector('.layout--home main .index');
+    const left = document.getElementById('category-sidebar');
+    const right = document.getElementById('blog-sidebar');
+    if (!index || !left || !right) return;
+
+    const grid = document.createElement('div');
+    grid.className = 'home-grid';
+    const center = document.createElement('div');
+    center.className = 'home-center';
+
+    const intro = document.querySelector('.layout--home .intro');
+    if (intro) center.appendChild(intro);
+    while (index.firstChild) center.appendChild(index.firstChild);
+
+    grid.append(left, center, right);
+    index.appendChild(grid);
+    index.classList.add('has-home-grid');
+  });
+</script>
 
 <script>
 (function () {
