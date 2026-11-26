@@ -97,6 +97,13 @@ paginate: true
   .cal-day.saturday { color:#1e88e5; }
   .cal-day.sunday { color:#e53935; }
   .cal-day.holiday { color:#e53935; }
+  /* 특별한 날: 숫자 뒤에 금색 별 */
+  .cal-day.star-day { isolation:isolate; font-weight:bold; color:#5d4037; }
+  .cal-day.star-day::before {
+    content:''; position:absolute; z-index:-1; left:50%; top:50%;
+    width:34px; height:34px; transform:translate(-50%, -50%); background:#ffc107;
+    clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  }
   /* 셀 사이 gap(4px)을 넘어 선이 이어지도록 좌우로 2px씩 확장 */
   .cal-day.in-module::after {
     content:''; position:absolute; bottom:0; height:3px;
@@ -214,6 +221,11 @@ paginate: true
     "2027-12-25": "성탄절", "2027-12-27": "대체공휴일(성탄절)"
   };
 
+  // 달력에 별 모양으로 표시할 날
+  const starDays = {
+    "2027-02-16": "부트캠프 마지막 날"
+  };
+
   fetch('{{ "/search.json" | relative_url }}?v={{ site.time | date: "%s" }}')
     .then(res => res.json())
     .then(posts => {
@@ -268,6 +280,10 @@ paginate: true
             if (dateStr === mod.start) cell.classList.add('module-start');
             if (dateStr === mod.end) cell.classList.add('module-end');
             if (!cell.title) cell.title = mod.name;
+          }
+          if (starDays[dateStr]) {
+            cell.classList.add('star-day');
+            cell.title = cell.title ? starDays[dateStr] + ' · ' + cell.title : starDays[dateStr];
           }
           if (postsByDate[dateStr]) {
             cell.addEventListener('click', () => showPosts(dateStr, cell));
